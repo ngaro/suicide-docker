@@ -23,3 +23,7 @@ You can use these programs to do so damage and try to find mothods to work aroun
 If you manage this then you should be able to find a way around similar programs in your real containers.<br>
 
 Another use might be to use this as base image to create a image with some software of which you want to test the resilience.
+
+#Building the image
+* If you have Perl and the modules `Getopt::Long` and `File::Temp`: Use `./buildimage.pl` ( See `./buildimage.pl --help` if you want to tweak the buildprocedure )
+* Otherwise, tune `Dockerfile` manually and run `docker build` with your favorite options
