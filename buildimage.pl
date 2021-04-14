@@ -56,6 +56,7 @@ unless(defined $nowrite) {
 	}
 	print STDERR "Writing to: $file\n\n" if(defined $verbose);
 	todockerfile($fh, "FROM $base");
+	todockerfile($fh, 'RUN if [ $(which apt) ] ; then apt-get update && apt-get -y install gcc ; else apk add gcc ; fi');
 	print STDERR "\nDone writing, closing $file\n" if(defined $verbose);
 	close $fh;
 	print "The generated Dockerfile is now available at: $file\n" if(defined $verbose);
