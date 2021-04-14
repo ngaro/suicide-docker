@@ -9,7 +9,8 @@ my $base = "ubuntu:20.04";
 my $cleanup = undef;
 my $file = undef;
 my $help = undef;
-my $imagename = "suicide";
+my $imagename = undef;
+my $tag;
 my $nobuild = undef;
 my $nowrite = undef;
 my $options = "";
@@ -35,7 +36,7 @@ Options:
 -c | --cleanup		Remove the Dockerfile when done.
 -f | --file=path	Use 'path' for the dockerfile, by default it's written to /tmp with a random suffix
 -h | --help		Show this help and exit
--i | --imagename=name	Name for the image, default is "suicide"
+-i | --imagename=name	Name for the image, default is "suicide" with the baseimage as tag (with ':' replaced by '-')
 --nobuild		Create the dockerfile but don't build the image
 --nowrite		Skip writing a new dockerfile, use 'Dockerfile' in the current directory or given with --dockerfile to build
 -o | --options=s	Provide extra options to 'docker build'
@@ -61,6 +62,10 @@ unless(defined $nowrite) {
 }
 unless(defined $nobuild) {
 	$file="./Dockerfile" unless(defined $file);
+	unless(defined $imagename) {
+		$tag = $base; $tag=~s/:/-/g;
+		$imagename="suicide:$tag";
+	}
 	my $buildcmd = "docker build -f $file -t $imagename $options .";
 	print "Building with: $buildcmd\n" if(defined $verbose);
 	die "Build failed" unless(system($buildcmd) == 0);
