@@ -31,7 +31,7 @@ Creates a dockerfile in /tmp and use this to build suicide-docker
 Usage: buildimage.pl [Options]
 
 Options:
--b | --base=image	Use base image to build. Default is "ubuntu:20.04", other supported images: debian, alpine (with any tag).
+-b | --base=image	Use base image to build. Default is "ubuntu:20.04", other supported images: debian, alpine, fedora, centos, arch (with any tag).
 			Images based upon these images usually also work, others usually don't work.
 -c | --cleanup		Remove the Dockerfile when done.
 -f | --file=path	Use 'path' for the dockerfile, by default it's written to /tmp with a random suffix
@@ -56,7 +56,10 @@ unless(defined $nowrite) {
 	}
 	print STDERR "Writing to: $file\n\n" if(defined $verbose);
 	todockerfile($fh, "FROM $base");
-	todockerfile($fh, 'RUN if [ $(which apt) ] ; then apt-get update && apt-get -y install gcc ; else apk add gcc ; fi');
+	if($base=~/debian/i or $base=~/ubuntu/i) { todockerfile($fh, 'RUN apt-get update && apt-get -y install automake build-essential vim-tiny && ln -s /etc/alternatives/vi /usr/bin/vim'); }
+	if($base=~/alpine/i) { todockerfile($fh, 'RUN apk update && apk add autoconf automake gcc e2fsprogs perl vim'); }
+	if($base=~/centos/i or $base=~/fedora/i) { todockerfile($fh, 'RUN yum install -y automake gcc vim e2fsprogs'); }
+	if($base=~/arch/i) { todockerfile($fh,"RUN echo '' | pacman -Sy automake gcc vim perl"); }
 	print STDERR "\nDone writing, closing $file\n" if(defined $verbose);
 	close $fh;
 	print "The generated Dockerfile is now available at: $file\n" if(defined $verbose);

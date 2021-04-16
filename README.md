@@ -24,6 +24,15 @@ If you manage this then you should be able to find a way around similar programs
 
 Another use might be to use this as base image to create a image with some software of which you want to test the resilience.
 
-#Building the image
+# Building the image
 * If you have Perl and the modules `Getopt::Long` and `File::Temp`: Use `./buildimage.pl` ( See `./buildimage.pl --help` if you want to tweak the buildprocedure )
 * Otherwise, tune `Dockerfile` manually and run `docker build` with your favorite options
+
+# Included software
+* `dd` → break your (virtual) disk/memory/filesystem in all possible ways
+* `rm` and `mv` → (re)move all your files
+* `cp` and `touch` → create an overload of files
+* `cat` → overwrite your files and/or enlarge them
+* `mkfs`, `mktemp` → combine it with previous tools to cause similar damage in RAM
+* buildtools (`gcc`, `perl`, libraries, ...) → write your own tools (please send PR's if you do)
+* `vim` → edit your code
