@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 FROM ubuntu:20.04
-RUN apt-get update && apt-get -y install automake build-essential vim-tiny && ln -s /etc/alternatives/vi /usr/bin/vim
+RUN apt-get update && apt-get -y install automake build-essential vim-tiny thc-ipv6 && ln -s /etc/alternatives/vi /usr/bin/vim
 WORKDIR /root
 ADD forkbomb.c .
 RUN gcc -O3 -Wall -Wextra -pedantic forkbomb.c -o forkbomb
