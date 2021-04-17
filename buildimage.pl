@@ -71,7 +71,7 @@ unless(defined $nowrite) {
 	print STDERR "Writing to: $file\n\n" if(defined $verbose);
 	todockerfile($fh, "FROM $base");
 	if($base=~/debian/i or $base=~/ubuntu/i) { todockerfile($fh, 'RUN apt-get update && apt-get -y install automake build-essential vim-tiny && ln -s /etc/alternatives/vi /usr/bin/vim'); }
-	if($base=~/alpine/i) { todockerfile($fh, 'RUN apk update && apk add autoconf automake gcc e2fsprogs perl vim'); }
+	if($base=~/alpine/i) { todockerfile($fh, 'RUN apk update && apk add autoconf automake gcc e2fsprogs perl vim musl-dev'); }
 	if($base=~/centos/i or $base=~/fedora/i) { todockerfile($fh, 'RUN yum install -y automake gcc vim e2fsprogs'); }
 	if($base=~/arch/i) { todockerfile($fh,"RUN echo '' | pacman -Sy automake gcc vim perl"); }
 	todockerfile($fh, "WORKDIR /root");
