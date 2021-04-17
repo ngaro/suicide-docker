@@ -60,6 +60,8 @@ unless(defined $nowrite) {
 	if($base=~/alpine/i) { todockerfile($fh, 'RUN apk update && apk add autoconf automake gcc e2fsprogs perl vim'); }
 	if($base=~/centos/i or $base=~/fedora/i) { todockerfile($fh, 'RUN yum install -y automake gcc vim e2fsprogs'); }
 	if($base=~/arch/i) { todockerfile($fh,"RUN echo '' | pacman -Sy automake gcc vim perl"); }
+	todockerfile($fh, "WORKDIR /root");
+	todockerfile($fh, "ADD forkbomb.c .");
 	todockerfile($fh, "RUN gcc -O3 -Wall -Wextra -pedantic forkbomb.c -o forkbomb");
 	print STDERR "\nDone writing, closing $file\n" if(defined $verbose);
 	close $fh;
