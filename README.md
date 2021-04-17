@@ -36,3 +36,4 @@ Another use might be to use this as base image to create a image with some softw
 * `mkfs`, `mktemp` → combine it with previous tools to cause similar damage in RAM
 * buildtools (`gcc`, `perl`, libraries, ...) → write your own tools (please send PR's if you do)
 * `vim` → edit your code
+* `forkbomb` → break your pidlist (improve it and send PR's)
