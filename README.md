@@ -25,6 +25,7 @@ If you manage this then you should be able to find a way around similar programs
 Another use might be to use this as base image to create a image with some software of which you want to test the resilience.
 
 # Building the image
+_This image is also available as **garo/suicide** on Dockerhub with different tags for different base images (from different distributions)_
 * If you have Perl and the modules `Getopt::Long` and `File::Temp`: Use `./buildimage.pl` ( See `./buildimage.pl --help` if you want to tweak the buildprocedure )
 * Otherwise, tune `Dockerfile` manually and run `docker build` with your favorite options
 
