@@ -29,6 +29,7 @@ my $nobuild = undef;
 my $nowrite = undef;
 my $options = "";
 my $verbose = undef;
+my $writeall = undef;
 
 sub todockerfile {
 	my ($fh, $line) = @_;
@@ -36,8 +37,24 @@ sub todockerfile {
 	print STDERR "$line\n" if(defined $verbose);
 }
 
-GetOptions( "base=s" => \$base, "cleanup" => \$cleanup, "file=s" => \$file, "help" => \$help, "imagename=s" => \$imagename, "nobuild" => \$nobuild, "nowrite"=> \$nowrite, "options=s" => \$options, "verbose" => \$verbose );
+GetOptions( "base=s" => \$base, "cleanup" => \$cleanup, "file=s" => \$file, "help" => \$help, "imagename=s" => \$imagename, "nobuild" => \$nobuild, "nowrite"=> \$nowrite, "options=s" => \$options, "verbose" => \$verbose, "writeall" => \$writeall);
 
+if(defined $writeall) {
+	my $originalbranch = `git branch --show-current`;
+	my $branches = {
+		"alpine" => "alpine",
+		"arch" => "archlinux",
+		"centos" => "centos",
+		"debian" => "debian:stable",
+		"dev" => "ubuntu:20.04",
+		"fedora" => "fedora:33",
+		"master" => "ubuntu:20.04",
+	};
+	foreach(keys %$branches) {
+		system("git checkout $_ && ./buildimage.pl -b $branches->{$_} -f Dockerfile --nobuild -v && git commit -a -m \"Updated Dockerfile\" && git push && git checkout $originalbranch");
+	}
+	exit;
+}
 if(defined $help) {
 	print << 'ENDOFHELP';
 Creates a dockerfile in /tmp and use this to build suicide-docker
@@ -55,6 +72,7 @@ Options:
 --nowrite		Skip writing a new dockerfile, use 'Dockerfile' in the current directory or given with --dockerfile to build
 -o | --options=s	Provide extra options to 'docker build'
 -v | --verbose		Send info about what is happening to STDERR
+-w | --write-all	Create new dockerfiles in all branches
 
 ENDOFHELP
 	exit;
