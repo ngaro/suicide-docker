@@ -30,6 +30,7 @@ my $nowrite = undef;
 my $options = "";
 my $verbose = undef;
 my $writeall = undef;
+my $push = undef;
 
 sub todockerfile {
 	my ($fh, $line) = @_;
@@ -37,7 +38,7 @@ sub todockerfile {
 	print STDERR "$line\n" if(defined $verbose);
 }
 
-GetOptions( "base=s" => \$base, "cleanup" => \$cleanup, "file=s" => \$file, "help" => \$help, "imagename=s" => \$imagename, "nobuild" => \$nobuild, "nowrite"=> \$nowrite, "options=s" => \$options, "verbose" => \$verbose, "writeall" => \$writeall);
+GetOptions( "base=s" => \$base, "cleanup" => \$cleanup, "file=s" => \$file, "help" => \$help, "imagename=s" => \$imagename, "nobuild" => \$nobuild, "nowrite"=> \$nowrite, "options=s" => \$options, "verbose" => \$verbose, "writeall" => \$writeall, "push" => \$push);
 
 if(defined $writeall) {
 	my $originalbranch = `git branch --show-current`;
@@ -51,7 +52,9 @@ if(defined $writeall) {
 		"master" => "ubuntu:20.04",
 	};
 	foreach(keys %$branches) {
-		system("git checkout $_ && ./buildimage.pl -b $branches->{$_} -f Dockerfile --nobuild -v && git commit -a -m \"Updated Dockerfile\" && git push && git checkout $originalbranch");
+		my $newdockerfilecmd = "git checkout $_ && ./buildimage.pl -b $branches->{$_} -f Dockerfile --nobuild -v && git commit -a -m \"Updated Dockerfile\" && echo Not pushing && git checkout $originalbranch";
+		if(defined $push) { $newdockerfilecmd=~s/echo Not pushing/git push && git push github/ ; }
+		system($newdockerfilecmd);
 	}
 	exit;
 }
@@ -69,10 +72,11 @@ Options:
 -h | --help		Show this help and exit
 -i | --imagename=name	Name for the image, default is "suicide" with the baseimage as tag (with ':' replaced by '-')
 --nobuild		Create the dockerfile but don't build the image
---nowrite		Skip writing a new dockerfile, use 'Dockerfile' in the current directory or given with --dockerfile to build
+--nowrite		Skip writing a new dockerfile, use 'Dockerfile' in the current directory or given with -f to build
 -o | --options=s	Provide extra options to 'docker build'
 -v | --verbose		Send info about what is happening to STDERR
 -w | --write-all	Create new dockerfiles in all branches
+-p | --push		Push the new commits to github and gitlab when using -w
 
 ENDOFHELP
 	exit;
