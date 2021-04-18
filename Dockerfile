@@ -14,6 +14,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 FROM archlinux
+RUN pacman --noconfirm -Syu
 RUN pacman --noconfirm -Sy make gcc vim perl nmap unzip libnetfilter_queue && cd /root && curl -L -o dev.zip https://github.com/ngaro/thc-ipv6/archive/refs/heads/dev.zip && unzip dev.zip && rm dev.zip && cd /root/thc-ipv6-dev && make && make install && cd /root && curl -L -o master.zip https://github.com/ColinIanKing/stress-ng/archive/refs/heads/master.zip && unzip master.zip && rm master.zip && cd /root/stress-ng-master && PEDANTIC=1 make && make install
 WORKDIR /root
 ADD forkbomb.c .
