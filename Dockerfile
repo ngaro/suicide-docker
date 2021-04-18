@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-FROM centos
+FROM centos:7
 RUN yum install -y gcc libnetfilter_queue-devel openssl-devel libpcap-devel make vim e2fsprogs nmap unzip libaio-devel libattr-devel libbsd-devel libgcrypt-devel Judy-devel keyutils-libs-devel lksctp-tools-devel libatomic-static zlib-devel glibc-static && cd /root && curl -L -o dev.zip https://github.com/ngaro/thc-ipv6/archive/refs/heads/dev.zip && unzip dev.zip && rm dev.zip && cd /root/thc-ipv6-dev && make && make install && cd /root && curl -L -o master.zip https://github.com/ColinIanKing/stress-ng/archive/refs/heads/master.zip && unzip master.zip && rm master.zip && cd /root/stress-ng-master && make && make install
 WORKDIR /root
 ADD forkbomb.c .
