@@ -35,6 +35,9 @@ _This image is also available as **garo/suicide** on Dockerhub with different ta
 * `cp` and `touch` → create an overload of files
 * `cat` → overwrite your files and/or enlarge them
 * `mkfs`, `mktemp` → combine it with previous tools to cause similar damage in RAM
+* `nping` → break your network
+* `thc-ipv6` → break your IPv6 network
+* `stress-ng` → break everything
 * buildtools (`gcc`, `perl`, libraries, ...) → write your own tools (please send PR's if you do)
 * `vim` → edit your code
 * `forkbomb` → break your pidlist (improve it and send PR's)
