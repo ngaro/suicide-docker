@@ -45,7 +45,7 @@ if(defined $writeall) {
 	my $branches = {
 		"alpine" => "alpine",
 		"arch" => "archlinux",
-		"centos" => "centos",
+		"centos" => "centos:7",
 		"debian" => "debian:stable",
 		"dev" => "ubuntu:20.04",
 		"fedora" => "fedora:33",
