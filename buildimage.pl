@@ -69,6 +69,23 @@ unless(defined $nowrite) {
 		($fh, $file) = tempfile($template, TMPDIR=>1) or die "Can't create $file";
 	}
 	print STDERR "Writing to: $file\n\n" if(defined $verbose);
+	my $gpl=<<END;
+# Suicide Docker
+# Copyright (C) 2021  Nikolas Garofil
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+END
+	todockerfile($fh, $gpl);
 	todockerfile($fh, "FROM $base");
 	if($base=~/debian/i or $base=~/ubuntu/i) { todockerfile($fh, 'RUN apt-get update && apt-get -y install build-essential vim-tiny nmap thc-ipv6 stress-ng && ln -s /etc/alternatives/vi /usr/bin/vim'); }
 	if($base=~/alpine/i) { todockerfile($fh, 'RUN apk update && apk add gcc e2fsprogs perl vim musl-dev nmap stress-ng make linux-headers libpcap-dev openssl-dev libnetfilter_queue-dev && cd /root && wget https://github.com/ngaro/thc-ipv6/archive/refs/heads/dev.zip && unzip dev.zip && rm dev.zip && cd thc-ipv6-dev && make && make install'); }
