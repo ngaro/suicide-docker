@@ -100,23 +100,23 @@ void detailedsleep(struct timespec *sleeptime, char verbose, char interruptable)
 	if(verbose > 0) { printf("PID %lu: There are now %lu pid's and i'm done sleeping.\n", (unsigned long) getpid(), *pids); }
 }
 
-//start a child and return the pid
+/* start a child and return the pid */
 pid_t startchild(char verbose) {
 	pid_t forkresult = fork();
 	if(forkresult == -1) {
 		fprintf(stderr, "PID %lu: I can't fork.\n", (unsigned long) getpid());
 		exit(EXIT_FAILURE);
 	}
-	if(forkresult == 0) {	//child
-		*pids = *pids + 1;	//only in child code so that the parent and the child don't both increase it
+	if(forkresult == 0) {	/* child */
+		*pids = *pids + 1;	/* only in child code so that the parent and the child don't both increase it */
 		if(verbose > 0) {
 			printf("PID %lu: I have been created, my parent is %lu and there are now %lu pids.\n", (unsigned long) getpid(), (unsigned long) getppid(), *pids);
 		}
 	}
-	return forkresult;	//return childpid if parent and 0 if child
+	return forkresult;	/* return childpid if parent and 0 if child */
 }
 
-//when receiving SIGUSR1 the head will printout updated info
+/* when receiving SIGUSR1 the head will printout updated info */
 void handlesignals(int sig, __attribute__ ((unused)) siginfo_t *info, __attribute__ ((unused)) void *ucontext) {
 	switch(sig) {
 		case SIGUSR1:
@@ -132,6 +132,9 @@ void handlesignals(int sig, __attribute__ ((unused)) siginfo_t *info, __attribut
 }
 
 int main(int argc, char **argv) {
+	volatile void *sharedmem;
+	unsigned long parent;
+
 	settings.maxtime.tv_sec = 24 * 60 * 60;
 	settings.maxtime.tv_nsec = 0;
 	settings.maxnum = 100;
@@ -140,35 +143,35 @@ int main(int argc, char **argv) {
 	settings.verbose = 0;
 	argtosettings(&settings, argc, argv);
 
-	//1st proc creates the shared memory
-	volatile void *sharedmem = mmap(NULL, sizeof(unsigned long), PROT_READ | PROT_WRITE,  MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+	/* 1st proc creates the shared memory */
+	sharedmem = mmap(NULL, sizeof(unsigned long), PROT_READ | PROT_WRITE,  MAP_SHARED | MAP_ANONYMOUS, -1, 0);
 	if(sharedmem == MAP_FAILED) { perror("Can't allocate shared memory: "); return EXIT_FAILURE;}
 	pids = sharedmem;
 
 	*pids = 1;
-	unsigned long parent = (unsigned long) getpid();
+	parent = (unsigned long) getpid();
 	if(startchild(settings.verbose) > 0) {
-		//The parents listens for SIGUSR1 signals
+		/* The parents listens for SIGUSR1 signals */
 		struct sigaction new_action;
 		new_action.sa_sigaction = handlesignals;
 		sigemptyset (&new_action.sa_mask);
 		new_action.sa_flags = SA_SIGINFO;
 		sigaction (SIGUSR1, &new_action, NULL);
 
-		//The parent kills everything after maxtime is over, the child will do the forkbomb
+		/* The parent kills everything after maxtime is over, the child will do the forkbomb */
 		printf("PID %lu: Starting a sleep of %lu milliseconds after this I will kill all my children.\n", parent, settings.maxtime.tv_sec * 1000 + settings.maxtime.tv_nsec / (1000 * 1000));
 		printf("PID %lu: I will also kill all my children once there are %lu of them.\n", parent, settings.maxnum);
 		printf("PID %lu: Print current state to STDERR with SIGUSR1 (e.g. 'kill -s SIGUSR1 %lu').\n", parent, parent);
 		detailedsleep(&(settings.maxtime), settings.verbose, 1);
 		if(settings.verbose > 0) { printf("PID %lu: Maximum time of %lu milliseconds reached, killing all %lu pid's.\n", parent, settings.maxtime.tv_sec * 1000 + settings.maxtime.tv_nsec / (1000 * 1000) , *pids); }
 		kill(0, SIGTERM);
-	} else {	//1st kid creates the forkbomb
+	} else {	/* 1st kid creates the forkbomb */
 		while(*pids < settings.maxnum) {
 			detailedsleep(&(settings.waittime), settings.verbose, 0);
 			startchild(settings.verbose);
 		}
 		if(settings.verbose > 0) { printf("PID %lu: Maximum number of pid's reached, sending SIGUSR2 to %lu.\n", (unsigned long) getpid(), parent); }
-		kill(parent, SIGUSR2);	//mention to parent that maximum number of pid's has been reached
+		kill(parent, SIGUSR2);	/* mention to parent that maximum number of pid's has been reached */
 	}
 	return EXIT_SUCCESS;
 }
