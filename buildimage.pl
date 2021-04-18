@@ -52,7 +52,7 @@ if(defined $writeall) {
 		"master" => "ubuntu:20.04",
 	};
 	foreach(keys %$branches) {
-		my $newdockerfilecmd = "git checkout $_ && ./buildimage.pl -b $branches->{$_} -f Dockerfile --nobuild -v && git commit -a -m \"Updated Dockerfile\" && echo Not pushing && git checkout $originalbranch";
+		my $newdockerfilecmd = "git checkout $_ && ./buildimage.pl -b $branches->{$_} -f Dockerfile --nobuild -v && git commit -a -m \"Updated Dockerfile\" ; echo Not pushing && git checkout $originalbranch";
 		if(defined $push) { $newdockerfilecmd=~s/echo Not pushing/git push && git push github/ ; }
 		system($newdockerfilecmd);
 	}
