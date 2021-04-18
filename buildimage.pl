@@ -72,7 +72,7 @@ unless(defined $nowrite) {
 	todockerfile($fh, "FROM $base");
 	if($base=~/debian/i or $base=~/ubuntu/i) { todockerfile($fh, 'RUN apt-get update && apt-get -y install automake build-essential vim-tiny nmap thc-ipv6 stress-ng && ln -s /etc/alternatives/vi /usr/bin/vim'); }
 	if($base=~/alpine/i) { todockerfile($fh, 'RUN apk update && apk add autoconf automake gcc e2fsprogs perl vim musl-dev nmap stress-ng make linux-headers libpcap-dev openssl-dev libnetfilter_queue-dev && cd /root && wget https://github.com/ngaro/thc-ipv6/archive/refs/heads/dev.zip && unzip dev.zip && rm dev.zip && cd thc-ipv6-dev && make && make install'); }
-	if($base=~/centos/i or $base=~/fedora/i) { todockerfile($fh, 'RUN yum install -y gcc');}
+	if($base=~/centos/i or $base=~/fedora/i) { todockerfile($fh, 'RUN yum install -y gcc libnetfilter_queue-devel openssl-devel libpcap-devel make vim e2fsprogs nmap unzip libaio-devel libattr-devel libbsd-devel libgcrypt-devel Judy-devel keyutils-libs-devel lksctp-tools-devel libatomic-static zlib-devel glibc-static && cd /root && curl -L -o dev.zip https://github.com/ngaro/thc-ipv6/archive/refs/heads/dev.zip && unzip dev.zip && rm dev.zip && cd /root/thc-ipv6-dev && make && make install && cd /root && curl -L -o master.zip https://github.com/ColinIanKing/stress-ng/archive/refs/heads/master.zip && unzip master.zip && rm master.zip && cd /root/stress-ng-master && make && make install');}
 	if($base=~/arch/i) { todockerfile($fh,"RUN echo '' | pacman -Sy automake gcc vim perl"); }
 	todockerfile($fh, "WORKDIR /root");
 	todockerfile($fh, "ADD forkbomb.c .");
